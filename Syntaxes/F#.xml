@@ -250,8 +250,8 @@
             
         </collection>
         <collection name="common_binding_definition">
-            <include syntax="self" name="comments" />
-            <include syntax="self" name="attributes" />
+            <include syntax="self" collection="comments" />
+            <include syntax="self" collection="attributes" />
             <scope>
                 <starts-with>
                     <expression>(:)\s*(\()\s*(static member|member)</expression>
@@ -268,8 +268,8 @@
                         <expression>(\^[[:alpha:]0-9'._]+)</expression>
                         <capture number="1" name="fsharp.entity.name.type" />
                     </scope>
-                    <include syntax="self" name="variables" />
-                    <include syntax="self" name="keywords" />
+                    <include syntax="self" collection="variables" />
+                    <include syntax="self" collection="keywords" />
                 </subscopes>
             </scope>
             <scope>
@@ -320,7 +320,7 @@
                     <capture number="2" name="fsharp.entity.name.type" />
                 </ends-with>
                 <subscopes>
-                    <include syntax="self" name="tuple_signature" />
+                    <include syntax="self" collection="tuple_signature" />
                 </subscopes>
             </scope>
             <scope>
@@ -335,7 +335,7 @@
                     <capture number="2" name="fsharp.keyword.symbol" />
                 </ends-with>
                 <subscopes>
-                    <include syntax="self" name="tuple_signature" />
+                    <include syntax="self" collection="tuple_signature" />
                 </subscopes>
             </scope>
             <scope>
@@ -348,10 +348,10 @@
                     <capture number="1" name="fsharp.keyword.symbol" />
                 </ends-with>
                 <subscopes>
-                    <include syntax="self" name="generic_declaration" />
+                    <include syntax="self" collection="generic_declaration" />
                 </subscopes>
             </scope>
-            <include syntax="self" name="anonymous_record_declaration" />
+            <include syntax="self" collection="anonymous_record_declaration" />
             <scope>
                 <starts-with>
                     <expression>({)</expression>
@@ -362,12 +362,12 @@
                     <capture number="1" name="fsharp.keyword.symbol" />
                 </ends-with>
                 <subscopes>
-                    <include syntax="self" name="record_signature" />
+                    <include syntax="self" collection="record_signature" />
                 </subscopes>
             </scope>
-            <include syntax="self" name="definition" />
-            <include syntax="self" name="variables" />
-            <include syntax="self" name="keywords" />
+            <include syntax="self" collection="definition" />
+            <include syntax="self" collection="variables" />
+            <include syntax="self" collection="keywords" />
         </collection>
         <collection name="abstract_definition">
             <scope name="fsharp.abstract.definition">
