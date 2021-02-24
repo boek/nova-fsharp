@@ -17,11 +17,11 @@
     </comments>
     
     <scopes>
-        <include syntax="self" collection="chars" />
         <include syntax="self" collection="comments" />
         <include syntax="self" collection="constants" />
-        <include syntax="self" collection="double_tick" />
         <include syntax="self" collection="strings" />
+        <include syntax="self" collection="chars" />
+        <include syntax="self" collection="double_tick" />
         <include syntax="self" collection="definition" />
         <include syntax="self" collection="abstract_definition" />
         <include syntax="self" collection="attributes" />
@@ -89,6 +89,9 @@
                     <expression>(\*\))</expression>
                     <capture number="1" name="fsharp.comment.block" />
                 </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="comments" />
+                </subscopes>
             </scope>
             <scope name="fsharp.comment.line.double-slash">
                 <expression>//.*$</expression>
@@ -97,6 +100,12 @@
         <collection name="constants">
             <scope name="fsharp.constant.language.unit">
                 <expression>\(\)</expression>
+            </scope>
+            <scope name="fsharp.constant.numeric.float">
+                <expression>\b-?[0-9][0-9_]*((\.([0-9][0-9_]*([eE][+-]??[0-9][0-9_]*)?)?)|([eE][+-]??[0-9][0-9_]*))</expression>
+            </scope>
+            <scope name="fsharp.constant.numeric.integer.nativeint">
+                <expression>\b(-?((0(x|X)[0-9a-fA-F][0-9a-fA-F_]*)|(0(o|O)[0-7][0-7_]*)|(0(b|B)[01][01_]*)|([0-9][0-9_]*)))</expression>
             </scope>
             <scope name="fsharp.constant.other">
                 <expression>\b(true|false|null|unit|void)\b</expression>
@@ -177,7 +186,7 @@
         <collection name="definition">
             <scope name="fsharp.binding">
                 <starts-with>
-                    <expression>\b(let mutable|static let mutable|static let|let inline|let|member val|static member inline|static member|default|member|override|let!)(\s+rec|mutable)?(\s+\[\&lt;.*\&gt;\])?\s*(private|internal|public)?\s+(\[[^-=]*\]|[_[:alpha:]]([_[:alpha:]0-9\._]+)*|``[_[:alpha:]]([_[:alpha:]0-9\._`\s]+|(?&lt;=,)\s)*)?</expression>
+                    <expression><![CDATA[\b(let mutable|static let mutable|let inline|let|member val|static member inline|static member|default|member|override|let!)(\s+rec|mutable)?(\s+\[\<.*\>\])?\s*(private|internal|public)?\s+(\[[^-=]*\]|[_[:alpha:]]([_[:alpha:]0-9,\._]+)*|``[_[:alpha:]]([_[:alpha:]0-9,\._`\s]+|(?<=,)\s)*)?]]></expression>
                     <capture number="1" name="fsharp.keyword" />
                     <capture number="2" name="fsharp.keyword" />
                     <capture number="3" name="fsharp.support.function.attribute" />
@@ -185,7 +194,7 @@
                     <capture number="5" name="fsharp.variable" />
                 </starts-with>
                 <ends-with>
-                    <expression>\s*(with\b|=|\n+=|(?&lt;=\=))</expression>
+                    <expression><![CDATA[\s*(with\b|=|\n+=|(?<=\=))]]></expression>
                     <capture number="1" name="fsharp.keyword" />
                 </ends-with>
                 <subscopes>
@@ -195,11 +204,11 @@
             
             <scope name="fsharp.binding">
                 <starts-with>
-                    <expression>(?&lt;=with|and)\s*\b((get|set)\s*(?=\())(\[[^-=]*\]|[_[:alpha:]]([_[:alpha:]0-9\._]+)*|``[_[:alpha:]]([_[:alpha:]0-9\._`\s]+|(?&lt;=,)\s)*)?</expression>
+                    <expression><![CDATA[(?<=with|and)\s*\b((get|set)\s*(?=\())(\[[^-=]*\]|[_[:alpha:]]([_[:alpha:]0-9\._]+)*|``[_[:alpha:]]([_[:alpha:]0-9\._`\s]+|(?<=,)\s)*)?]]></expression>
                     <capture number="4" name="fsharp.variable" />
                 </starts-with>
                 <ends-with>
-                    <expression>\s*(=|\n+=|(?&lt;=\=))</expression>
+                    <expression><![CDATA[\s*(with\b|=|\n+=|(?<=\=))]]></expression>
                     <capture number="1" name="fsharp.keyword" />
                 </ends-with>
                 <subscopes>
@@ -209,7 +218,7 @@
             
             <scope name="fsharp.binding">
                 <starts-with>
-                    <expression>\b(static val mutable|val mutable|val)(\s+rec|mutable)?(\s+\[\&lt;.*\&gt;\])?\s*(private|internal|public)?\s+(\[[^-=]*\]|[_[:alpha:]]([_[:alpha:]0-9,\._]+)*|``[_[:alpha:]]([_[:alpha:]0-9,\._`\s]+|(?&lt;=,)\s)*)?</expression>
+                    <expression><![CDATA[\b(let mutable|static let mutable|let inline|let|member val|static member inline|static member|default|member|override|let!)(\s+rec|mutable)?(\s+\[\<.*\>\])?\s*(private|internal|public)?\s+(\[[^-=]*\]|[_[:alpha:]]([_[:alpha:]0-9,\._]+)*|``[_[:alpha:]]([_[:alpha:]0-9,\._`\s]+|(?<=,)\s)*)?]]></expression>
                     <capture number="1" name="fsharp.keyword" />
                     <capture number="2" name="fsharp.keyword" />
                     <capture number="3" name="fsharp.support.function.attribute" />
@@ -252,6 +261,7 @@
                 </starts-with>
                 <ends-with>
                     <expression>(\))\s*((?=,)|(?=\=))</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
                 </ends-with>
                 <subscopes>
                     <scope>
@@ -394,10 +404,10 @@
         <collection name="attributes">
             <scope name="fsharp.support.function.attribute">
                 <starts-with>
-                    <expression>\[\&lt;</expression>
+                    <expression><![CDATA[\[\<]]></expression>
                 </starts-with>
                 <ends-with>
-                    <expression>&gt;\]|\]</expression>
+                    <expression><![CDATA[\>\]|\]]]></expression>
                 </ends-with>
                 <subscopes>
                     <include syntax="self" collection="self" />
@@ -496,7 +506,7 @@
                 <expression>\(\)</expression>
             </scope>
             <scope>
-                <expression>(\?{0,1})(``[[:alpha:]0-9'`^:,._ ]+``|(?!private\b)\b[\w[:alpha:]0-9'`&lt;&gt;^._ ]+)</expression>
+                <expression><![CDATA[(\?{0,1})(``[[:alpha:]0-9''`^:,._ ]+``|[[:alpha:]0-9''`<>^._ ]\w*)]]></expression>
                 <capture number="1" name="fsharp.keyword.symbol" />
                 <capture number="2" name="fsharp.variable.parameter" />
             </scope>
