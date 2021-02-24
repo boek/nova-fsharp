@@ -791,5 +791,53 @@
                 </subscopes>
             </scope>
         </collection>
+        <collection name="common_declaration">
+            <scope>
+                <starts-with>
+                    <expression><![CDATA[\s*(->)\s*([[:alpha:]0-9''`^._ ]+)(<)]]></expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                    <capture number="2" name="fsharp.entity.name.type" />
+                    <capture number="3" name="fsharp.keyword.symbol" />
+                </starts-with>
+                <ends-with>
+                    <expression><![CDATA[(>)]]></expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </ends-with>
+                <subscopes>
+                    <scope>
+                        <expression>([[:alpha:]0-9'`^._ ]+)</expression>
+                        <capture number="1" name="fsharp.entity.type.fsharp" />
+                    </scope>
+                    <include syntax="self" collection="keywords" />
+                </subscopes>
+            </scope>
+            <scope>
+                <expression><![CDATA[\s*(->)\s*(?!with|get|set\b)\b([\w0-9''`^._]+)]]></expression>
+                <capture number="1" name="fsharp.keyword.symbol" />
+                <capture number="2" name="fsharp.entity.name.type" />
+            </scope>
+            <include syntax="self" collection="anonymous_record_declaration" />
+            <scope>
+                <starts-with>
+                    <expression><![CDATA[(\?{0,1})([[:alpha:]0-9''`^._ ]+)\s*(:)(\s*([?[:alpha:]0-9''`^._ ]+)(<))]]></expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                    <capture number="2" name="fsharp.variable.parameter" />
+                    <capture number="3" name="fsharp.keyword.symbol" />
+                    <capture number="4" name="fsharp.keyword.symbol" />
+                    <capture number="5" name="fsharp.entity.name.type" />
+                </starts-with>
+                <ends-with>
+                    <expression><![CDATA[()]]></expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </ends-with>
+                <subscopes>
+                    <scope>
+                        <expression>([[:alpha:]0-9'`^._ ]+)</expression>
+                        <capture number="1" name="fsharp.entiy.name.type" />
+                    </scope>
+                    <include syntax="self" collection="keywords" />
+                </subscopes>
+            </scope>
+        </collection>
     </collections>
 </syntax>
