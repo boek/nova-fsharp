@@ -1,0 +1,44 @@
+{
+  "clips" : [
+    {
+      "content" : "<scope name=\"$0\">\n\t<starts-with>\n\t\t<expression>$1<\/expression>\n\t<\/starts-with>\n\t<ends-with>\n\t\t<expression>$2<\/expression>\n\t<\/ends-with>\n<\/scope>",
+      "name" : "wrapped scope",
+      "scope" : "editor",
+      "syntax" : "xml",
+      "trigger" : "wrapped scope"
+    },
+    {
+      "content" : "<![CDATA[$0]]>",
+      "name" : "cdata",
+      "scope" : "editor",
+      "syntax" : "xml",
+      "trigger" : "cdata"
+    },
+    {
+      "content" : "<capture number=\"$0\" name=\"$1\" \/>",
+      "name" : "capture",
+      "scope" : "editor",
+      "syntax" : "xml",
+      "trigger" : "capture"
+    },
+    {
+      "content" : "<subscopes>\n$0\n<\/subscopes>",
+      "name" : "subscopes",
+      "trigger" : "subscopes"
+    },
+    {
+      "content" : "<include syntax=\"self\" collection=\"$0\" \/>",
+      "name" : "include",
+      "scope" : "editor",
+      "syntax" : "xml",
+      "trigger" : "include"
+    },
+    {
+      "content" : "<scope name=\"$0\">\n\t<expression><\/expression>\n<\/scope>",
+      "name" : "scope",
+      "scope" : "editor",
+      "syntax" : "xml",
+      "trigger" : "scope"
+    }
+  ]
+}

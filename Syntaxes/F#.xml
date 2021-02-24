@@ -1,0 +1,785 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<syntax name="fsharp">
+    <meta>
+        <name>F#</name>
+        <type>structured</type>
+        <preferred-file-extension>fs</preferred-file-extension>
+    </meta>
+    
+    <detectors>
+        <extension priority="1.0">fs,fsx</extension>
+    </detectors>
+    
+    <comments>
+        <single>
+            <expression>//</expression>
+        </single>
+    </comments>
+    
+    <scopes>
+        <include syntax="self" collection="chars" />
+        <include syntax="self" collection="comments" />
+        <include syntax="self" collection="constants" />
+        <include syntax="self" collection="double_tick" />
+        <include syntax="self" collection="strings" />
+        <include syntax="self" collection="definition" />
+        <include syntax="self" collection="abstract_definition" />
+        <include syntax="self" collection="attributes" />
+        <include syntax="self" collection="modules" />
+        <include syntax="self" collection="anonymous_functions" />
+        <include syntax="self" collection="du_declaration" />
+        <include syntax="self" collection="record_declaration" />
+        <include syntax="self" collection="records" />
+        <include syntax="self" collection="strp_inlined" />
+        <include syntax="self" collection="keywords" />
+        <include syntax="self" collection="cexprs" />
+        <include syntax="self" collection="text" />
+    </scopes>
+    
+    <collections>
+        <collection name="strp_inlined_body">
+            <include syntax="self" collection="comments" />
+            <include syntax="self" collection="anonymous_functions" />
+            <scope>
+                <expression>(\^[[:alpha:]0-9''._]+)</expression>
+                <capture number="1" name="fsharp.entity.name.type" />
+            </scope>
+            <scope name="fsharp.keyword">
+                <expression>\b(and|when|or)\b</expression>
+            </scope>
+            <scope>
+                <starts-with>
+                    <expression>(\()</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\))</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="strp_inlined_body" />
+                </subscopes>
+            </scope>
+            <scope>
+                <expression><![CDATA[(static member|member)\s*([[:alpha:]0-9''`<>^._]+|``[[:alpha:]0-9'' <>^._]+``)\s*(:)]]></expression>
+                <capture number="1" name="fsharp.keyword" />
+                <capture number="2" name="fsharp.variable" />
+                <capture number="3" name="fsharp.keyword.symbol" />
+            </scope>
+            <include syntax="self" collection="compiler_directives" />
+            <include syntax="self" collection="constants" />
+            <include syntax="self" collection="strings" />
+            <include syntax="self" collection="chars" />
+            <include syntax="self" collection="double_tick" />
+            <include syntax="self" collection="keywords" />
+            <include syntax="self" collection="text" />
+            <include syntax="self" collection="definition" />
+            <include syntax="self" collection="attributes" />
+            <include syntax="self" collection="keywords" />
+            <include syntax="self" collection="cexprs" />
+            <include syntax="self" collection="text" />
+        </collection>
+        <collection name="comments">
+            <scope name="fsharp.comment.block">
+                <starts-with>
+                    <expression>(\(\*)</expression>
+                    <capture number="1" name="fsharp.comment.block" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\*\))</expression>
+                    <capture number="1" name="fsharp.comment.block" />
+                </ends-with>
+            </scope>
+            <scope name="fsharp.comment.line.double-slash">
+                <expression>//.*$</expression>
+            </scope>
+        </collection>
+        <collection name="constants">
+            <scope name="fsharp.constant.language.unit">
+                <expression>\(\)</expression>
+            </scope>
+            <scope name="fsharp.constant.other">
+                <expression>\b(true|false|null|unit|void)\b</expression>
+            </scope>
+        </collection>
+        <collection name="strings">
+            <scope name="fsharp.string.quoted.literal">
+                <starts-with>
+                    <expression>(?=[^\\])(@\")</expression>
+                    <capture number="1" name="fsharp.punctuation.definition.string.begin" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\")(?!\")</expression>
+                    <capture number="1" name="fsharp.punctuation.definition.string.end" />
+                </ends-with>
+                <subscopes>
+                    <scope name="fsharp.constant.character.string.escape">
+                        <expression>\"(\")</expression>
+                    </scope>
+                </subscopes>
+            </scope>
+            <scope name="fsharp.string.quoted.triple">
+                <starts-with>
+                    <expression>(?=[^\\])(\"\"\")</expression>
+                    <capture number="1" name="fsharp.punctuation.definition.string.begin" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\"\"\")</expression>
+                    <capture number="1" name="fsharp.punctuation.definition.string.end" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="string_formatter" />
+                </subscopes>
+            </scope>
+            <scope name="fsharp.string.quoted.double">
+                <starts-with>
+                    <expression>(?=[^\\])(\")</expression>
+                    <capture number="1" name="fsharp.punctuation.definition.string.begin" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\")</expression>
+                    <capture number="1" name="fsharp.punctuation.definition.string.end" />
+                </ends-with>
+                <subscopes>
+                    <scope name="fsharp.punctuation.separator.string.ignore-eol">
+                        <expression>\\$[ \t]*</expression>
+                    </scope>
+                    <scope name="fsharp.constant.character.string.escape">
+                        <expression>\\([\\''ntbr]|x[a-fA-F0-9]{2}|u[a-fA-F0-9]{4}|u[a-fA-F0-9]{8})</expression>
+                    </scope>
+                    <scope name="fsharp.invalid.illeagal.character.string">
+                        <expression>\\(?![\\''ntbr]|x[a-fA-F0-9]{2}|u[a-fA-F0-9]{4}|u[a-fA-F0-9]{8}).</expression>
+                    </scope>
+                    <include syntax="self" collection="string_formatter" />
+                </subscopes>
+            </scope>
+        </collection>
+        <collection name="string_formatter">
+            <scope name="entity.name.type.format.specifier">
+                <expression>(%0?-?(\d+)?((a|t)|(\.\d+)?(f|F|e|E|g|G|M)|(b|c|s|d|i|x|X|o|u)|(s|b|O)|(\+?A)))</expression>
+                <capture number="1" name="fsharp.keyword.format.specifier" />
+            </scope>
+        </collection>
+        <collection name="chars">
+            <scope name="fsharp.char">
+                <expression>('\\?.')</expression>
+                <capture number="1" name="fsharp.string.quoted.single" />
+            </scope>
+        </collection>
+        <collection name="double_tick">
+            <scope name="fsharp.variable.other.binding">
+                <expression>(``)([^`]*)(``)</expression>
+                <capture number="1" name="fsharp.string.quoted.single" />
+                <capture number="2" name="fsharp.variable.other.binding" />
+                <capture number="3" name="fsharp.string.quoted.single" />
+            </scope>
+        </collection>
+        <collection name="definition">
+            <scope name="fsharp.binding">
+                <starts-with>
+                    <expression>\b(let mutable|static let mutable|static let|let inline|let|member val|static member inline|static member|default|member|override|let!)(\s+rec|mutable)?(\s+\[\&lt;.*\&gt;\])?\s*(private|internal|public)?\s+(\[[^-=]*\]|[_[:alpha:]]([_[:alpha:]0-9\._]+)*|``[_[:alpha:]]([_[:alpha:]0-9\._`\s]+|(?&lt;=,)\s)*)?</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                    <capture number="2" name="fsharp.keyword" />
+                    <capture number="3" name="fsharp.support.function.attribute" />
+                    <capture number="4" name="fsharp.storage.modifier" />
+                    <capture number="5" name="fsharp.variable" />
+                </starts-with>
+                <ends-with>
+                    <expression>\s*(with\b|=|\n+=|(?&lt;=\=))</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="common_binding_definition" />
+                </subscopes>
+            </scope>
+            
+            <scope name="fsharp.binding">
+                <starts-with>
+                    <expression>(?&lt;=with|and)\s*\b((get|set)\s*(?=\())(\[[^-=]*\]|[_[:alpha:]]([_[:alpha:]0-9\._]+)*|``[_[:alpha:]]([_[:alpha:]0-9\._`\s]+|(?&lt;=,)\s)*)?</expression>
+                    <capture number="4" name="fsharp.variable" />
+                </starts-with>
+                <ends-with>
+                    <expression>\s*(=|\n+=|(?&lt;=\=))</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="common_binding_definition" />
+                </subscopes>
+            </scope>
+            
+            <scope name="fsharp.binding">
+                <starts-with>
+                    <expression>\b(static val mutable|val mutable|val)(\s+rec|mutable)?(\s+\[\&lt;.*\&gt;\])?\s*(private|internal|public)?\s+(\[[^-=]*\]|[_[:alpha:]]([_[:alpha:]0-9,\._]+)*|``[_[:alpha:]]([_[:alpha:]0-9,\._`\s]+|(?&lt;=,)\s)*)?</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                    <capture number="2" name="fsharp.keyword" />
+                    <capture number="3" name="fsharp.support.function.attribute" />
+                    <capture number="4" name="fsharp.storage.modifier" />
+                    <capture number="5" name="fsharp.variable" />
+                </starts-with>
+                <ends-with>
+                    <expression>\n$</expression>
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="common_binding_definition" />
+                </subscopes>
+            </scope>
+            
+            <scope name="fsharp.binding">
+                <starts-with>
+                    <expression>\b(new)\b\s+(\()</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                    <capture number="2" name="fsharp.keyword" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\))</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="common_binding_definition" />
+                </subscopes>
+            </scope>
+            
+        </collection>
+        <collection name="common_binding_definition">
+            <include syntax="self" name="comments" />
+            <include syntax="self" name="attributes" />
+            <scope>
+                <starts-with>
+                    <expression>(:)\s*(\()\s*(static member|member)</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                    <capture number="2" name="fsharp.keyword.symbol" />
+                    <capture number="3" name="fsharp.keyword" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\))\s*((?=,)|(?=\=))</expression>
+                </ends-with>
+                <subscopes>
+                    <scope>
+                        <expression>(\^[[:alpha:]0-9'._]+)</expression>
+                        <capture number="1" name="fsharp.entity.name.type" />
+                    </scope>
+                    <include syntax="self" name="variables" />
+                    <include syntax="self" name="keywords" />
+                </subscopes>
+            </scope>
+            <scope>
+                <starts-with>
+                    <expression>(:)\s*(\^[[:alpha:]0-9'._]+)\s*(when)</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                    <capture number="2" name="fsharp.entity.name.type" />
+                    <capture number="3" name="fsharp.keyword" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\?=:)</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                </ends-with>
+                <subscopes>
+                    <scope name="fsharp.keyword">
+                        <expression>\b(and|when|or)\b</expression>
+                    </scope>
+                    <scope>
+                        <expression>([[:alpha:]0-9'^._]+)</expression>
+                        <capture number="1" name="fsharp.entity.name.type" />
+                    </scope>
+                    <scope name="fsharp.keyword.symbol">
+                        <expression>(\(|\))</expression>
+                    </scope>
+                </subscopes>
+            </scope>
+            <scope>
+                <expression>(:)\s*([?[:alpha:]0-9'`^._ ]+)</expression>
+                <capture number="1" name="fsharp.keyword.symbol" />
+                <capture number="2" name="fsharp.entity.name.type" />
+            </scope>
+            <scope>
+                <expression>(-&gt;)\s*(\()?\s*([?[:alpha:]0-9'`^._ ]+)*</expression>
+                <capture number="1" name="fsharp.keyword.symbol" />
+                <capture number="2" name="fsharp.keyword.symbol" />
+                <capture number="3" name="fsharp.entity.name.type" />
+            </scope>
+            
+            <scope>
+                <starts-with>
+                    <expression>(\*)\s*(\()</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                    <capture number="2" name="fsharp.keyword.symbol" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\)\s*(([?[:alpha:]0-9'`^._ ]+))+)</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                    <capture number="2" name="fsharp.entity.name.type" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" name="tuple_signature" />
+                </subscopes>
+            </scope>
+            <scope>
+                <starts-with>
+                    <expression>(\*)(\s*([?[:alpha:]0-9'`^._ ]+))*</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                    <capture number="2" name="fsharp.entity.name.type" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\?==)|(\?=\))</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                    <capture number="2" name="fsharp.keyword.symbol" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" name="tuple_signature" />
+                </subscopes>
+            </scope>
+            <scope>
+                <starts-with>
+                    <expression>(&lt;+(?![[:space:]]*\)))</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </starts-with>
+                <ends-with>
+                    <expression>((?&lt;!:)&gt;|\))</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" name="generic_declaration" />
+                </subscopes>
+            </scope>
+            <include syntax="self" name="anonymous_record_declaration" />
+            <scope>
+                <starts-with>
+                    <expression>({)</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </starts-with>
+                <ends-with>
+                    <expression>(})</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" name="record_signature" />
+                </subscopes>
+            </scope>
+            <include syntax="self" name="definition" />
+            <include syntax="self" name="variables" />
+            <include syntax="self" name="keywords" />
+        </collection>
+        <collection name="abstract_definition">
+            <scope name="fsharp.abstract.definition">
+                <starts-with>
+                    <expression>\b(abstract)\s+(member)?(\s+\[\&lt;.*\&gt;\])?\s*([_[:alpha:]0-9,\._`\s]+)(:)</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                    <capture number="2" name="fsharp.keyword" />
+                    <capture number="3" name="fsharp.support.function.attribute" />
+                    <capture number="4" name="" />
+                    <capture number="5" name="fsharp.keyword" />
+                </starts-with>
+                <ends-with>
+                    <expression>\s*(with)\b|=|$</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="comments" />
+                    <include syntax="self" collection="common_declaration" />
+                    <scope>
+                        <expression>(\?{0,1})([[:alpha:]0-9'`^._ ]+)\s*(:)((?!with\b)\\b([\\w0-9'`^._ ]+)){0,1}</expression>
+                        <capture number="1" name="fsharp.keyword.symbol" />
+                        <capture number="2" name="fsharp.variable.parameter" />
+                        <capture number="3" name="fsharp.keyword.symbol" />
+                        <capture number="4" name="fsharp.entity.name.type" />
+                    </scope>
+                    <scope>
+                        <expression>(?!with|get|set\b)\b([\\w0-9'`^._]+)</expression>
+                        <capture number="1" name="fsharp.entity.name.type" />
+                    </scope>
+                    <include syntax="self" collection="keywords" />
+                </subscopes>
+            </scope>
+        </collection>
+        <collection name="attributes">
+            <scope name="fsharp.support.function.attribute">
+                <starts-with>
+                    <expression>\[\&lt;</expression>
+                </starts-with>
+                <ends-with>
+                    <expression>&gt;\]|\]</expression>
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="self" />
+                </subscopes>
+            </scope>
+        </collection>
+        <collection name="modules">
+            <scope name="fsharp.entity.name.section">
+                <starts-with>
+                    <expression>\b(namespace|module)\s*(public|internal|private)?\s+([[:alpha:]][[:alpha:]0-9''_. ]*)</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                    <capture number="2" name="fsharp.keyword" />
+                    <capture number="3" name="fsharp.storage.modifier" />
+                </starts-with>
+                <ends-with>
+                    <expression>($|\s?=|\s)</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </ends-with>
+                <subscopes>
+                    <scope name="fsharp.entity.name.section">
+                        <expression>(\.)([A-Z][[:alpha:]0-9''_]*)</expression>
+                        <capture number="1" name="fsharp.punctuation.separator.namespace-reference" />
+                        <capture number="2" name="fsharp.entity.name.section" />    
+                    </scope>
+                </subscopes>
+            </scope>
+            <scope name="fsharp.namespace.open">
+                <starts-with>
+                    <expression>\b(open)\s+([[:alpha:]][[:alpha:]0-9''_]*)(?=(\.[A-Z][[:alpha:]0-9_]*)*)</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                    <capture number="2" name="fsharp.entity.name.section" />
+                </starts-with>
+                <ends-with>
+                    <expression>($|\s)</expression>
+                </ends-with>
+                <subscopes>
+                    <scope name="fsharp.entity.name.section">
+                        <expression>(\.)([[:alpha:]][[:alpha:]0-9''_]*)</expression>
+                        <capture number="1" name="fsharp.punctuation.separator.namespace-reference" />
+                        <capture number="2" name="fsharp.entity.name.section" />    
+                    </scope>
+                    <include syntax="self" collection="comments" />
+                </subscopes>
+            </scope>
+            <scope name="fsharp.namespace.alias">
+                <starts-with>
+                    <expression>^\s*(module)\s+([A-Z][[:alpha:]0-9''_]*)\s*(=)\s*([A-Z][[:alpha:]0-9''_]*)</expression>
+                    <capture number="1" name="fsharp.keyword" />    
+                    <capture number="2" name="fsharp.entity.name.type.namespace" />    
+                    <capture number="3" name="fsharp.punctuation.separator.namespace-definition" />    
+                    <capture number="4" name="fsharp.entity.name.section" />    
+                </starts-with>
+                <ends-with>
+                    <expression>(\s|$)</expression>
+                </ends-with>
+                <subscopes>
+                    <scope name="fsharp.entity.name.section">
+                        <expression>(\.)([A-Z][[:alpha:]0-9''_]*)</expression>
+                        <capture number="1" name="fsharp.punctuation.separator.namespace-reference" />
+                        <capture number="2" name="fsharp.entity.name.section" />    
+                    </scope>
+                </subscopes>
+            </scope>
+        </collection>
+        <collection name="anonymous_functions">
+            <scope name="fsharp.function.anonymous">
+                <starts-with>
+                    <expression>\b(fun)\b</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                </starts-with>
+                <ends-with>
+                    <expression>(-&gt;)</expression>
+                    <capture number="1" name="fsharp.keyword.symbol.arrow" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="comments" />
+                    <scope>
+                        <starts-with>
+                            <expression>(\()</expression>
+                            <capture number="1" name="fsharp.keyword.symbol.arrow" />
+                        </starts-with>
+                        <ends-with>
+                            <expression>\s*(?=(-&gt;))</expression>
+                            <capture number="1" name="fsharp.keyword.symbol.arrow" />
+                        </ends-with>
+                        <subscopes>
+                            <include syntax="self" collection="member_declaration" />
+                        </subscopes>
+                    </scope>
+                    <include syntax="self" collection="variables" />
+                </subscopes>
+            </scope>
+        </collection>
+        <collection name="variables">
+            <scope name="fsharp.constant.language.unit">
+                <expression>\(\)</expression>
+            </scope>
+            <scope>
+                <expression>(\?{0,1})(``[[:alpha:]0-9'`^:,._ ]+``|(?!private\b)\b[\w[:alpha:]0-9'`&lt;&gt;^._ ]+)</expression>
+                <capture number="1" name="fsharp.keyword.symbol" />
+                <capture number="2" name="fsharp.variable.parameter" />
+            </scope>
+        </collection>
+        <collection name="tuple_signature">
+            <scope>
+                <expression>(([?[:alpha:]0-9'`^._ ]+))+</expression>
+                <capture number="1" name="fsharp.entity.name.type" />
+            </scope>
+            <scope>
+                <starts-with>
+                    <expression>(\()</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\))</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </ends-with>
+                <subscopes>
+                    <scope>
+                        <expression>(([?[:alpha:]0-9'`^._ ]+))+</expression>
+                        <capture number="1" name="fsharp.entity.name.type" />
+                    </scope>
+                    <include syntax="self" collection="tuple_signature" />
+                </subscopes>
+            </scope>
+        </collection>
+        <collection name="du_declaration">
+            <scope name="fsharp.du_declaration">
+                <starts-with>
+                    <expression>\b(of)\b</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                </starts-with>
+                <ends-with>
+                    <expression>$|(\|)</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="comments" />
+                    <scope>
+                        <expression>([[:alpha:]0-9&apos;`&lt;&gt;^._]+|``[[:alpha:]0-9&apos; &lt;&gt;^._]+``)\s*(:)\s*([[:alpha:]0-9&apos;`&lt;&gt;^._]+|``[[:alpha:]0-9&apos; &lt;&gt;^._]+``)</expression>
+                        <capture number="1" name="fsharp.variable.parameter" />
+                        <capture number="2" name="fsharp.keyword.symbol" />
+                        <capture number="3" name="fsharp.entity.name" />
+                    </scope>
+                    <scope>
+                        <expression>(``([[:alpha:]0-9&apos;^._ ]+)``|[[:alpha:]0-9&apos;`^._]+)</expression>
+                        <capture number="1" name="fsharp.entity.name.type" />
+                    </scope>
+                    <include syntax="self" collection="anonymous_record_declaration" />
+                    <include syntax="self" collection="keywords" />
+                </subscopes>
+            </scope>
+        </collection>
+        <collection name="keywords">
+            <scope name="storage.modifier">
+                <expression>\b(private|public|internal)\b</expression>
+            </scope>
+            <scope name="fsharp.keyword">
+                <expression>\b(private|to|public|internal|function|class|exception|delegate|of|as|begin|end|inherit|let!|interface|abstract|enum|member|and|when|or|use|use\!|struct|mutable|assert|base|done|downcast|downto|extern|fixed|global|lazy|upcast|not)(?!')\b</expression>
+            </scope>
+            <scope name="keyword.control">
+                <expression>\b(match|yield|yield!|with|if|then|else|elif|for|in|return!|return|try|finally|while|do)(?!')\b</expression>
+            </scope>
+            <scope name="keyword.symbol.new">
+                <expression>\b(new)\b</expression>
+            </scope>
+            <scope name="fsharp.keyword.symbol">
+                <expression><![CDATA[(&&&|\|\|\||\^\^\^|~~~|<<<|>>>|\|>|\->|\<\-|:>|:\?>|:|\[|\]|\;|<>|=|@|\|\||&&|{|}|\||_|\.\.|\,|\+|\-|\*|\/|\^|\!|\>|\>\=|\>\>|\<|\<\=|\(|\)|\<\<)]]></expression>
+            </scope>
+        </collection>
+        <collection name="strp_inlined">
+            <scope>
+                <starts-with>
+                    <expression>(\()</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\))</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="strp_inlined_body" />
+                </subscopes>
+            </scope>
+        </collection>
+        <collection name="cexprs">
+            <scope name="fsharp.cexpr">
+                <expression>\b(async|seq|promise|task|maybe|asyncMaybe|controller|scope|application|pipeline)\s*\{</expression>
+                <capture number="1" name="fsharp.keyword" />
+            </scope>
+        </collection>
+        <collection name="text">
+            <scope name="fsharp.text">
+                <expression>\\</expression>
+            </scope>
+        </collection>
+        <collection name="records">
+            <scope name="fsharp.record">
+                <starts-with>
+                    <expression>\b(type)[\s]+(private|internal|public)?\s*</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                    <capture number="2" name="fsharp.storage.modifier" />
+                </starts-with>
+                <ends-with>
+                    <expression>\s*((with)|((as)\s+([[:alpha:]0-9'']+))|(=)|[\n=]|(\(\)))</expression>
+                    <capture number="1" name="" />
+                    <capture number="2" name="fsharp.keyword" />
+                    <capture number="3" name="fsharp.keyword" />
+                    <capture number="4" name="fsharp.keyword" />
+                    <capture number="5" name="fsharp.variable.parameter" />
+                    <capture number="6" name="fsharp.keyword.symbol" />
+                    <capture number="7" name="fsharp.constant.language.unit" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="comments" />
+                    <include syntax="self" collection="attributes" />
+                    <scope>
+                        <expression>([[:alpha:]0-9'^._]+|``[[:alpha:]0-9'`^:,._ ]+``)</expression>
+                        <capture number="1" name="fsharp.entity.name.type" />
+                    </scope>
+                    <scope>
+                        <starts-with>
+                            <expression><![CDATA[(<)]]></expression>
+                            <capture number="1" name="fsharp.keyword" />
+                        </starts-with>
+                        <ends-with>
+                            <expression><![CDATA[((?<!:)>)]]></expression>
+                            <capture number="1" name="fsharp.keyword" />
+                        </ends-with>
+                        <subscopes>
+                            <scope>
+                                <expression>((''|\^)``[[:alpha:]0-9`^:,._ ]+``|(''|\^)[[:alpha:]0-9`^:._]+)</expression>
+                                <capture number="1" name="fsharp.entity.name.type" />
+                            </scope>
+                            <scope name="fsharp.keyword">
+                                <expression>\b(interface|with|abstract|and|when|or|not|struct|equality|comparison|unmanaged|delegate|enum)\b</expression>
+                            </scope>
+                            <scope>
+                                <starts-with>
+                                    <expression>(\()</expression>
+                                    <capture number="1" name="fsharp.keyword.symbol" />
+                                </starts-with>
+                                <ends-with>
+                                    <expression>(\))</expression>
+                                    <capture number="1" name="fsharp.keyword.symbol" />
+                                </ends-with>
+                                <subscopes>
+                                    <scope>
+                                        <expression>(static member|member|new)</expression>
+                                        <capture number="1" name="fsharp.keyword" />
+                                    </scope>
+                                    <include syntax="self" collection="common_binding_definition" />
+                                </subscopes>
+                            </scope>
+                            <scope>
+                                <expression>([\w0-9'`^._]+)</expression>
+                                <capture number="1" name="fsharp.enttiy.name.type" />
+                            </scope>
+                            <include syntax="self" collection="keywords" />
+                        </subscopes>
+                    </scope>
+                    <scope>
+                        <expression>\s*(private|internal|public)</expression>
+                        <capture number="1" name="fsharp.keyword.symbol" />
+                    </scope>
+                    <scope>
+                        <starts-with>
+                            <expression>(\()</expression>
+                            <capture number="1" name="fsharp.keyword.symbol" />
+                        </starts-with>
+                        <ends-with>
+                            <expression>\s*(?=(=)|[\n=]|(\(\))|(as))</expression>
+                            <capture number="1" name="fsharp.keyword.symbol" />
+                        </ends-with>
+                        <subscopes>
+                            <include syntax="self" collection="member_declaration" />
+                        </subscopes>
+                    </scope>
+                    <include syntax="self" collection="keywords" />
+                </subscopes>
+            </scope>
+        </collection>
+        <collection name="member_declaration">
+            <include syntax="self" collection="comments" />
+            <include syntax="self" collection="common_declaration" />
+            <scope>
+                <starts-with>
+                    <expression>(:)\s*(\()\s*(static member|member)</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                    <capture number="2" name="fsharp.keyword.symbol" />
+                    <capture number="3" name="fsharp.keyword" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\))\s*((?=,)|(?=\=))</expression>
+                    <capture number="1" name="fsharp.keyword" />
+                </ends-with>
+                <subscopes>
+                    <scope>
+                        <starts-with>
+                            <expression>(\()</expression>
+                            <capture number="1" name="fsharp.keyword.symbol" />
+                        </starts-with>
+                        <ends-with>
+                            <expression>(\))</expression>
+                            <capture number="1" name="fsharp.keyword.symbol" />
+                        </ends-with>
+                        <subscopes>
+                            <include syntax="self" collection="member_declaration" />
+                        </subscopes>
+                    </scope>
+                    <scope>
+                        <expression>(\^[[:alpha:]0-9'._]+)</expression>
+                        <capture number="1" name="fsharp.entity.name.type" />
+                    </scope>
+                    <include syntax="self" collection="variables" />
+                    <include syntax="self" collection="keywords" />
+                </subscopes>
+            </scope>
+            <scope>
+                <expression>(\^[[:alpha:]0-9'._]+)</expression>
+                <capture number="1" name="fsharp.entity.name.type" />
+            </scope>
+            <scope name="fsharp.keyword">
+                <expression>\b(and|when|or)\b</expression>
+            </scope>
+            <scope name="fsharp.keyword.symbol">
+                <expression>(\(|\))</expression>
+            </scope>
+            <scope>
+                <expression><![CDATA[(\?{0,1})([[:alpha:]0-9''`^._]+|``[[:alpha:]0-9''`^:,._ ]+``)\s*(:{0,1})(\s*([?[:alpha:]0-9''`<>._ ]+)){0,1}]]></expression>
+                <capture number="1" name="fsharp.keyword.symbol" />
+                <capture number="2" name="fsharp.variable.parameter" />
+                <capture number="3" name="fsharp.keyword.symbol" />
+                <capture number="4" name="fsharp.enttiy.name.type" />
+            </scope>
+            <include syntax="self" collection="keywords" />
+        </collection>
+        <collection name="record_declaration">
+            <scope>
+                <starts-with>
+                    <expression>(\{)</expression>
+                    <capture number="1" name="fsharp.keyword.symbol" />
+                </starts-with>
+                <ends-with>
+                    <expression><![CDATA[(?<=\})]]></expression>
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="comments" />
+                    <scope>
+                        <starts-with>
+                            <expression><![CDATA[(((mutable)\s[[:alpha:]]+)|[[:alpha:]0-9''`<>^._]*)\s*((?<!:):(?!:))\s*]]></expression>
+                            <capture number="1" name="" />
+                            <capture number="2" name="" />
+                            <capture number="3" name="fsharp.keyword" />
+                            <capture number="4" name="fsharp.keyword.symbol" />
+                        </starts-with>
+                        <ends-with>
+                            <expression>$|(;|\})</expression>
+                            <capture number="1" name="fsharp.keyword.symbol" />
+                        </ends-with>
+                        <subscopes>
+                            <include syntax="self" collection="comments" />
+                            <scope>
+                                <expression>([[:alpha:]0-9'`^_ ]+)</expression>
+                                <capture number="1" name="fsharp.entity.name.type" />
+                            </scope>
+                            <include syntax="self" collection="keywords" />
+                        </subscopes>
+                    </scope>
+                    <include syntax="self" collection="compiler_directives" />
+                    <include syntax="self" collection="constants" />
+                    <include syntax="self" collection="strings" />
+                    <include syntax="self" collection="chars" />
+                    <include syntax="self" collection="double_tick" />
+                    <include syntax="self" collection="definition" />
+                    <include syntax="self" collection="attributes" />
+                    <include syntax="self" collection="anonymous_functions" />
+                    <include syntax="self" collection="keywords" />
+                    <include syntax="self" collection="cexprs" />
+                    <include syntax="self" collection="text" />
+                </subscopes>
+            </scope>
+        </collection>
+    </collections>
+</syntax>
