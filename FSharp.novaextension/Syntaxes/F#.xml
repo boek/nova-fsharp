@@ -194,7 +194,7 @@
                     <capture number="5" name="fsharp.variable" />
                 </starts-with>
                 <ends-with>
-                    <expression><![CDATA[\s*(with\b|=|\n+=|(?<=\=))]]></expression>
+                    <expression><![CDATA[$|\s*(with\b|=|\n+=|(?<=\=))]]></expression>
                     <capture number="1" name="fsharp.keyword" />
                 </ends-with>
                 <subscopes>
@@ -522,7 +522,7 @@
             <scope>
                 <expression><![CDATA[(\?{0,1})(``[[:alpha:]0-9''`^:,._ ]+``|[[:alpha:]0-9''`<>^._ ]\w*)]]></expression>
                 <capture number="1" name="fsharp.keyword.symbol" />
-                <capture number="2" name="fsharp.variable.parameter" />
+                <capture number="2" name="fsharp.identifier.argument" />
             </scope>
         </collection>
         <collection name="tuple_signature">
@@ -609,8 +609,9 @@
         </collection>
         <collection name="cexprs">
             <scope name="fsharp.cexpr">
-                <expression>\b(async|seq|promise|task|maybe|asyncMaybe|controller|scope|application|pipeline)\s*\{</expression>
+                <expression>\b(async|seq|promise|task|maybe|asyncMaybe|controller|scope|application|pipeline)\s*(\{)</expression>
                 <capture number="1" name="fsharp.keyword" />
+                <capture number="2" name="fsharp.keyword" />
             </scope>
         </collection>
         <collection name="text">
