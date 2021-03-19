@@ -3,7 +3,7 @@ var langserver = null;
 
 exports.activate = function() {
     // Do work when the extension is activated
-    langserver = new ExampleLanguageServer();
+    langserver = new FSharpLanguageServer();
 }
 
 exports.deactivate = function() {
@@ -14,8 +14,27 @@ exports.deactivate = function() {
     }
 }
 
+class FSharpCommands {
+    constructor(client) {
+        this.client = client
+    }
+    
+    loadWorkspaceAuto() {
+        console.log("[FSAC] Loading workspace...")
+        const params = {
+            Directory: nova.workspace.path,
+            Deep: 2,
+            ExcludedDirs: []
+        }
+        this.client.sendRequest("fsharp/workspacePeek", params)
+            .then(function(a) {
+                console.log(JSON.stringify(a))
+            })
+    }
+}
 
-class ExampleLanguageServer {
+
+class FSharpLanguageServer {
     constructor() {
         // Observe the configuration setting for the server's location, and restart the server on change
         nova.config.observe('example.language-server-path', function(path) {
@@ -35,34 +54,40 @@ class ExampleLanguageServer {
         
         // Use the default server path
         if (!path) {
-            path = nova.extension.path + "/bin/launch.sh";
+            path = "/usr/local/share/dotnet/dotnet"
         }
         
         // Create the client
         var serverOptions = {
-            path: path
+            path: path,
+            args: [
+                nova.extension.path + "/bin/fsautocomplete.dll",
+                "--background-service-enabled"
+            ]
         };
         var clientOptions = {
             // The set of document syntaxes for which the server is valid
             syntaxes: ['F#', 'fsharp', 'fs'],
             initializationOptions: {
-                "AutomaticWorkspaceInit": true
+                "AutomaticWorkspaceInit": false,
             }
         };
-        var client = new LanguageClient('example-langserver', 'Example Language Server', serverOptions, clientOptions);
+        var client = new LanguageClient('FSharp', 'F#', serverOptions, clientOptions);
         
+        var commands = new FSharpCommands(client);
+        
+        
+        console.log("created client");        
         try {
             // Start the client
-            console.log("lol2")
             client.start();
             // Add the client to the subscriptions to be cleaned up
+            commands.loadWorkspaceAuto()
             nova.subscriptions.add(client);
             this.languageClient = client;
-            client.sendNotification("initialize", {})
         }
         catch (err) {
             // If the .start() method throws, it's likely because the path to the language server is invalid
-            
             if (nova.inDevMode()) {
                 console.error(err);
             }
