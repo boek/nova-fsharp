@@ -337,16 +337,15 @@
                     <include syntax="self" collection="tuple_signature" />
                 </subscopes>
             </scope>
-            <scope name="FIXME">
+            <scope>
                 <starts-with>
                     <expression>(\*)(\s*([?[:alpha:]0-9'`^._ ]+))*</expression>
                     <capture number="1" name="fsharp.keyword.symbol" />
                     <capture number="2" name="fsharp.entity.name.type" />
                 </starts-with>
                 <ends-with>
-                    <expression>(\?==)|(\?=\))</expression>
+                    <expression>((?==)|(?=\)))</expression>
                     <capture number="1" name="fsharp.keyword.symbol" />
-                    <capture number="2" name="fsharp.keyword.symbol" />
                 </ends-with>
                 <subscopes>
                     <include syntax="self" collection="tuple_signature" />
