@@ -1,5 +1,5 @@
 
-**F#** provides syntax highlighting and auto completions to Nova
+Adds F# syntax highlighting and auto completions to Nova
 
 ---
 
