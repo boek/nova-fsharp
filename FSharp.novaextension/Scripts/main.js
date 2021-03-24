@@ -26,10 +26,6 @@ class FSharpCommands {
             Deep: 2,
             ExcludedDirs: []
         }
-        this.client.sendRequest("fsharp/workspacePeek", params)
-            .then(function(a) {
-                console.log(JSON.stringify(a))
-            })
     }
 }
 
@@ -67,9 +63,9 @@ class FSharpLanguageServer {
         };
         var clientOptions = {
             // The set of document syntaxes for which the server is valid
-            syntaxes: ['F#', 'fsharp', 'fs'],
+            syntaxes: ['fsharp'],
             initializationOptions: {
-                "AutomaticWorkspaceInit": false,
+                "AutomaticWorkspaceInit": true,
             }
         };
         var client = new LanguageClient('FSharp', 'F#', serverOptions, clientOptions);
