@@ -3,7 +3,7 @@
     "name": "F#",
     "organization": "Spilt Cocoa",
     "description": "F# syntax and language server",
-    "version": "1.0",
+    "version": "1.0.1",
     "categories": ["languages"],
     
     "main": "main.js",
